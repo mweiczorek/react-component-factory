@@ -1,0 +1,23 @@
+{
+  "name": "react-component-factory",
+  "version": "1.0.0",
+  "description": "Creates React Components",
+  "main": "index.js",
+  "bin": {
+    "rcf": "index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mweiczorek/react-component-factory"
+  },
+  "author": "Michael Wieczorek",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^3.0.0",
+    "inquirer": "^7.1.0",
+    "pascalcase": "^1.0.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

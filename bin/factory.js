@@ -267,9 +267,13 @@ module.exports = root => {
       }
       decl.push(' {')
     } else {
-      decl.push(`export function ${recipe.name}`)
+      if (recipe.properties.indexOf('observer') > -1) {
+        decl.push(`export const ${recipe.name} = observer(`)
+      } else {
+        decl.push(`export const ${recipe.name} = `)
+      }
       decl.push(recipe.properties.indexOf('props') > -1 ? `(props: ${recipe.name}Props)` : '()')
-      decl.push(': React.ReactElement {')
+      decl.push(': React.ReactElement => {')
     }
 
     lines.push(decl.join(''))
@@ -303,13 +307,18 @@ module.exports = root => {
       lines.push(`  )`)
     }
 
-    lines.push('}')
-    lines.push('')
 
-    if (recipe.type == 'functional' && recipe.properties.indexOf('observer') > -1) {
-      lines.push(`export observer(${recipe.name})`)
-      lines.push('')
+    if (recipe.type == 'functional') {
+      if (recipe.properties.indexOf('observer') > -1) {
+        lines.push('})')
+      } else {
+        lines.push('}')
+      }
+    } else {
+      lines.push('}')
     }
+
+    lines.push('')
 
     const content = lines.join('\n')
     const dest = getDestLocation(recipe)

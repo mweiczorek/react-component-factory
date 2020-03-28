@@ -7,7 +7,7 @@ const pascal = require('pascalcase')
 
 module.exports = root => {
 
-  const configFile = path.join(root, 'cb.config.js')
+  const configFile = path.join(root, 'rcf.config.js')
 
   const macros = {
     greenCheck: chalk.greenBright('\u2713'),
@@ -16,7 +16,7 @@ module.exports = root => {
   }
 
   if (!fs.existsSync(configFile)) {
-    console.log(macros.redX + ` Could not find the project configuration file at "${configFile}"`);
+    console.log(macros.redX + ` Could not find the component factory configuration file (rcf.config.js) in the project root`);
     console.log(' ')
     process.exit(1)
   }

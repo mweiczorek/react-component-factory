@@ -1,6 +1,6 @@
 {
   "name": "@nolawnchairs/react-component-factory",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Creates React Components",
   "main": "index.js",
   "bin": {

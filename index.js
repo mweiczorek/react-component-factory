@@ -36,6 +36,9 @@ const defaultRecipe = {
 // Transient recipe
 let recipe = defaultRecipe
 
+console.log(chalk.yellowBright('React Component Factory'))
+console.log(`Working directory: ${root}\n`)
+
 if (!fs.existsSync(componentRoot)) {
   console.log(macros.redX + ` Specified component root '${componentRoot} not found.`);
   createRoot().then(created => {

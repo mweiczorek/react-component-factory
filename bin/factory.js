@@ -117,20 +117,25 @@ module.exports = root => {
     return res.type
   }
 
+  function listDirs(dir) {
+    const dirs = []
+    for (const d of fs.readdirSync(dir, { withFileTypes: true }))
+      if (d.isDirectory())
+        dirs.push(path.join(dir, d.name), ...listDirs(path.resolve(dir, d.name)))
+    return dirs.map(d => d.replace(componentRoot, '').replace(/\\/g, '/'))
+  }
+
   /**
    * Prompt for subfolder location in component
    * tree
    */
   async function chooseLocation() {
-    const folders = new Set(fs.readdirSync(componentRoot, { withFileTypes: true })
-      .filter(entry => entry.isDirectory())
-      .map(entry => entry.name))
-
+    const folders = listDirs(componentRoot)
     const res = await inq.prompt({
       type: 'list',
       name: 'dir',
       message: 'Choose component location',
-      choices: ['Create Directory', ...Array.from(folders.values())]
+      choices: ['Create Directory', ...folders]
     })
     return res.dir
   }

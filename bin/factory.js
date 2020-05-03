@@ -198,17 +198,20 @@ module.exports = root => {
         name: 'With React Props',
         checked: true
       },
-      {
-        value: 'observer',
-        name: 'Wrap as @observer',
-        checked: recipe.type == 'class'
-      }
     ]
+
+    if (recipe.type == 'functional') {
+      choices.push({
+        value: 'observer',
+        name: 'Wrap as mobx @observer',
+        checked: recipe.type == 'class'
+      })
+    }
 
     if (recipe.type == 'class') {
       choices.push({
         value: 'observables',
-        name: 'Make @observer'
+        name: 'Wrap as mobx @observer'
       })
       choices.push({
         value: 'constructor',
@@ -223,6 +226,26 @@ module.exports = root => {
       choices
     })
     return res.properties
+  }
+
+  async function choosePropsOptions() {
+    const choices = [
+      {
+        value: 'hasChildren',
+        name: 'Props contain children',
+      },
+      {
+        value: 'hasDefault',
+        name: 'Include default props',
+      }
+    ]
+    const res = await inq.prompt({
+      type: 'checkbox',
+      name: 'options',
+      message: 'Choose React Props options',
+      choices,
+    })
+    return res.options
   }
 
   async function confirmRecipe() {
@@ -266,18 +289,34 @@ module.exports = root => {
     if (recipe.type == 'class') {
       decl.push(`export class ${recipe.name} extends React.Component`)
       if (recipe.properties.indexOf('props') > -1) {
-        decl.push(`<${recipe.name}Props>`)
+        if (recipe.propOptions.indexOf('hasChildren') > -1) {
+          decl.push(`<React.PropsWithChildren<${recipe.name}Props>>`)
+        } else {
+          decl.push(`<${recipe.name}Props>`)
+        }
       } else {
         decl.push(`<{}>`)
       }
       decl.push(' {')
     } else {
       if (recipe.properties.indexOf('observer') > -1) {
-        decl.push(`export const ${recipe.name} = observer(`)
+        decl.push(`export const ${recipe.name}: React.FC<`)
+        decl.push(recipe.properties.indexOf('props') > -1 ? `${recipe.name}Props` : '{}')
+        decl.push(`> = observer(`)
       } else {
-        decl.push(`export const ${recipe.name} = `)
+        decl.push(`export const ${recipe.name}: React.FC<`)
+        decl.push(recipe.properties.indexOf('props') > -1 ? `${recipe.name}Props` : '{}')
+        decl.push(`> = `)
       }
-      decl.push(recipe.properties.indexOf('props') > -1 ? `(props: ${recipe.name}Props)` : '()')
+      if (recipe.properties.indexOf('props') > -1) {
+        if (recipe.propOptions.indexOf('hasChildren') > -1) {
+          decl.push(`(props: React.PropsWithChildren<${recipe.name}Props>)`)
+        } else {
+          decl.push(`(props: ${recipe.name}Props)`)
+        }
+      } else {
+        decl.push('()')
+      }
       decl.push(': React.ReactElement => {')
     }
 
@@ -285,6 +324,14 @@ module.exports = root => {
     lines.push('')
 
     if (recipe.properties.indexOf('constructor') > -1 && recipe.type == 'class') {
+
+      if (recipe.propOptions && recipe.propOptions.indexOf('hasDefault') > -1) {
+        lines.push(
+          `  static defaultProps: Partial<${recipe.name}Props> = {}`,
+          '',
+        )
+      }
+
       const ctor = []
       ctor.push('  constructor(')
       if (recipe.properties.indexOf('props') > -1) {
@@ -319,6 +366,13 @@ module.exports = root => {
       } else {
         lines.push('}')
       }
+
+      if (recipe.propOptions && recipe.propOptions.indexOf('hasDefault') > -1) {
+        lines.push(
+          '',
+          `${recipe.name}.defaultProps = { }`,
+        )
+      }
     } else {
       lines.push('}')
     }
@@ -350,6 +404,11 @@ module.exports = root => {
     }
 
     recipe.properties = await chooseProprties()
+    if (recipe.properties.indexOf('props') > -1) {
+      recipe.propOptions = await choosePropsOptions()
+    } else {
+      recipe.propOptions = []
+    }
     const accept = await confirmRecipe()
     if (accept) {
       try {

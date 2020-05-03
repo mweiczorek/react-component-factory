@@ -1,6 +1,6 @@
 # React Component Factory
 
-Just a simple CLI program to create React components for my projects.
+Just a simple CLI program to create React components for my projects. Only for in-house use!
 
 ## Define Root Component Directory
 
@@ -21,7 +21,7 @@ Install globally.
 
 ## Usage
 
-Simple call `rcf` and follow the instructions
+Simply call `rcf` and follow the instructions
 
 ### Choose Component Type
 
@@ -50,10 +50,65 @@ Check the options that apply:
 ### Choose React Props options
 This option is only presented if *With React props* was selected in the previous step.
 
-* **Props contain children** - this option will wrap the prop interface in the function/class props with `React.PropsWithChildred<T>`. This will add `children` to the prop definitions so it can be added to the component.
+* **Props contain children** - this option will wrap the prop interface in the function/class props with `React.PropsWithChildren<T>`. This will add `children` to the prop definitions so it can be added to the component.
 * **Include default props** - this will add a default props object to the module (for functional components) or to the class as a static member (for class components). It will be typed as `Partial<Props>`
 
 ## Accept and build?
 
 Default option is `y` and will create the component! Choosing `n` will abort its creation.
 
+## Notes
+
+The props interface (if created) will be named the component's name plus `Props`:
+
+```
+Foo -> FooProps
+
+export interface FooProps {
+  
+}
+```
+
+The props will also be defined in the component's signature.
+
+For functional components
+```
+export const Foo: React.FC<FooProps> = (props: FooProps): React.ReactElement => {
+  ...
+}
+
+// with children
+export const Foo: React.FC<FooProps> = (props: React.PropsWithChildren<FooProps>): React.ReactElement => {
+  ...
+}
+```
+
+For class components:
+```
+export class Foo extends React.Component<FooProps> {
+  ...
+}
+
+// with children
+export class Foo extends React.Component<React.PropsWithChildren<FooProps>> {
+  ...
+}
+```
+
+For functional components, default props will be added after the function:
+```
+export const Foo: React.FC<FooProps> = (props: FooProps): React.ReactElement => {
+  ...
+}
+
+Foo.defaultProps = {}
+```
+
+And as static props for class components, at the top of the class:
+```
+export class Foo extends React.Component<FooProps> {
+  
+  static defaultProps: Partial<FooProps> = {}
+  ...
+}
+```

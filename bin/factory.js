@@ -203,7 +203,7 @@ module.exports = root => {
     if (recipe.type == 'functional') {
       choices.push({
         value: 'observer',
-        name: 'Wrap as mobx @observer',
+        name: 'Wrap with mobx observer',
         checked: recipe.type == 'class'
       })
     }
@@ -211,7 +211,7 @@ module.exports = root => {
     if (recipe.type == 'class') {
       choices.push({
         value: 'observables',
-        name: 'Wrap as mobx @observer'
+        name: 'Decorate as mobx @observer'
       })
       choices.push({
         value: 'constructor',

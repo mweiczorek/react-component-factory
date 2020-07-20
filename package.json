@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "chalk": "^3.0.0",
-    "inquirer": "^7.1.0",
+    "inquirer": "^7.3.2",
     "pascalcase": "^1.0.0",
     "pkg-dir": "^4.2.0"
   },
